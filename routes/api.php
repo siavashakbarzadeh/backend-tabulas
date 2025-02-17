@@ -15,6 +15,7 @@ Route::group([
     ], function () {
 
         Route::post('login/microsoft', [AuthenticationController::class, 'loginByMicrosoft'])->name('login-microsoft');
+        Route::post('login', [AuthenticationController::class, 'login'])->name('login');
 
         Route::group([
             'middleware' => 'auth:sanctum',

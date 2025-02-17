@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'operation_was_successful' => 'The operation was successful',
-    'information_was_received_successfully' => 'The information was received successfully',
+    'success' => 'Success',
+    'error' => 'Error',
     'user_registered_successfully' => 'User registered successfully',
     'user_is_baned' => 'The user is baned',
 ];
