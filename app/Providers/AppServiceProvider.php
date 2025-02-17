@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Facades\Api\ApiResponse as ApiResponseFacade;
+use App\Responses\Api\ApiResponse;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +21,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        $this->app->bind(ApiResponseFacade::FACADE_ACCESSOR, function () {
+            return new ApiResponse();
+        });
     }
 }
