@@ -18,6 +18,13 @@ Route::group([
         Route::post('login', [AuthenticationController::class, 'login'])->name('login');
         Route::post('register', [AuthenticationController::class, 'register'])->name('register');
 
+        Route::get('test',function (){
+            return [
+                'message' => 'Success',
+                'fake_mobile'=>fake()->numerify('09#########')
+            ];
+        });
+
         Route::group([
             'middleware' => 'auth:sanctum',
         ], function () {
