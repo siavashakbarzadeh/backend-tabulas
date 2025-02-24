@@ -12,6 +12,6 @@ class ApiResponse extends Facade
     const string FACADE_ACCESSOR = 'api-response-accessor';
     protected static function getFacadeAccessor()
     {
-        return static::FACADE_ACCESSOR;
+        return 'api-response-accessor';
     }
 }
