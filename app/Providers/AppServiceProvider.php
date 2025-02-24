@@ -21,7 +21,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->app->bind(ApiResponseFacade::FACADE_ACCESSOR, function () {
+        $this->app->bind('api-response-accessor', function () {
             return new ApiResponse();
         });
     }

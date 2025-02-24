@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Facade;
  */
 class ApiResponse extends Facade
 {
-    const string FACADE_ACCESSOR = 'api-response-accessor';
     protected static function getFacadeAccessor()
     {
         return 'api-response-accessor';
