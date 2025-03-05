@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\V1\Tabulas\TabulasKioskController;
+use App\Http\Controllers\V1\Tabulas\TabulasMobileController;
 use App\Http\Controllers\V1\User\Authentication\AuthenticationController;
 use App\Http\Controllers\V1\User\UserController;
 use Illuminate\Http\Request;
@@ -18,10 +20,10 @@ Route::group([
         Route::post('login', [AuthenticationController::class, 'login'])->name('login');
         Route::post('register', [AuthenticationController::class, 'register'])->name('register');
 
-        Route::get('test',function (){
+        Route::get('test', function () {
             return [
                 'message' => 'Success',
-                'fake_mobile'=>fake()->numerify('09#########')
+                'fake_mobile' => fake()->numerify('09#########')
             ];
         });
 
@@ -30,6 +32,21 @@ Route::group([
         ], function () {
 
             Route::get('/user', [UserController::class, 'user'])->name('user');
+
+            Route::get('tabulas/mobile/commissioni', [TabulasMobileController::class, 'commissioni'])->name('tabulas.mobile.commissioni');
+            Route::get('tabulas/mobile/ultimiatti', [TabulasMobileController::class, 'ultimiatti'])->name('tabulas.mobile.ultimiatti');
+            Route::get('tabulas/mobile/ultimdossier', [TabulasMobileController::class, 'ultimdossier'])->name('tabulas.mobile.ultimdossier');
+            Route::get('tabulas/mobile/webtv', [TabulasMobileController::class, 'webtv'])->name('tabulas.mobile.webtv');
+            Route::get('tabulas/mobile/ebook', [TabulasMobileController::class, 'ebook'])->name('tabulas.mobile.ebook');
+            Route::get('tabulas/mobile/guidemanuali', [TabulasMobileController::class, 'guidemanuali'])->name('tabulas.mobile.guidemanuali');
+            Route::get('tabulas/mobile/servizi', [TabulasMobileController::class, 'servizi'])->name('tabulas.mobile.servizi');
+
+            Route::get('tabulas/kiosk/assemblea', [TabulasKioskController::class, 'assemblea'])->name('tabulas.kiosk.assemblea');
+            Route::get('tabulas/kiosk/commperm', [TabulasKioskController::class, 'commperm'])->name('tabulas.kiosk.commperm');
+            Route::get('tabulas/kiosk/giuntealtrecomm', [TabulasKioskController::class, 'giuntealtrecomm'])->name('tabulas.kiosk.giuntealtrecomm');
+            Route::get('tabulas/kiosk/bicamedeleg', [TabulasKioskController::class, 'bicamedeleg'])->name('tabulas.kiosk.bicamedeleg');
+            Route::get('tabulas/kiosk/webtv', [TabulasKioskController::class, 'webtv'])->name('tabulas.kiosk.webtv');
+            Route::get('tabulas/kiosk/pillolevideo', [TabulasKioskController::class, 'pillolevideo'])->name('tabulas.kiosk.pillolevideo');
 
         });
 
