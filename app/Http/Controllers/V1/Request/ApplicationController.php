@@ -38,8 +38,7 @@ class ApplicationController extends Controller
                 return ApiResponse::success(trans('messages.success'));
             });
         } catch (Throwable $e) {
-            dd($e->getMessage());
-            return ApiResponse::error(trans('messages.error'));
+            return ApiResponse::error($e->getMessage());
         }
     }
 }
