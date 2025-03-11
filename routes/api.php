@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\V1\Request\ApplicationController;
 use App\Http\Controllers\V1\Tabulas\TabulasKioskController;
 use App\Http\Controllers\V1\Tabulas\TabulasMobileController;
 use App\Http\Controllers\V1\User\Authentication\AuthenticationController;
@@ -32,6 +33,8 @@ Route::group([
         ], function () {
 
             Route::get('/user', [UserController::class, 'user'])->name('user');
+
+            Route::post('/applications', [ApplicationController::class, 'store'])->name('applications.store');
 
             Route::get('tabulas/mobile/commissioni', [TabulasMobileController::class, 'commissioni'])->name('tabulas.mobile.commissioni');
             Route::get('tabulas/mobile/ultimiatti', [TabulasMobileController::class, 'ultimiatti'])->name('tabulas.mobile.ultimiatti');
