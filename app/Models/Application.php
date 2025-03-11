@@ -11,8 +11,8 @@ class Application extends Model
     /** @use HasFactory<\Database\Factories\ApplicationFactory> */
     use HasFactory, HasMedia;
 
-    const string MEDIA_DOCUMENT_COLLECTION = 'application-documents';
-    const string MEDIA_SIGN_COLLECTION = 'application-signs';
+    const MEDIA_DOCUMENT_COLLECTION = 'application-documents';
+    const MEDIA_SIGN_COLLECTION = 'application-signs';
 
     /**
      * @var string[]
