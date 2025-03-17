@@ -22,7 +22,7 @@ class ApplicationResource extends JsonResource
             'recipient_office' => $this->whenHas('recipient_office'),
             'submission_date' => $this->whenHas('submission_date', fn($date) => $date->toDateString()),
             'document' => $this->whenLoaded('document', function () {
-                return $this->resource->document;
+                return "salam";
             }),
         ];
     }
