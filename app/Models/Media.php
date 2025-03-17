@@ -39,7 +39,9 @@ class Media extends Model
 
     public function getPublicFiles()
     {
-        dd($this->files);
+        dd(collect($this->files)->mapWithKeys(function ($file,$key) {
+            return [$key => $file];
+        }));
     }
 
     /**
