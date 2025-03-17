@@ -15,6 +15,11 @@ use Throwable;
 
 class ApplicationController extends Controller
 {
+    /**
+     * @param Request $request
+     * @param $application
+     * @return JsonResponse
+     */
     public function show(Request $request, $application)
     {
         $application = Application::with([
