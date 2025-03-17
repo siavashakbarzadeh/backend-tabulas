@@ -30,7 +30,7 @@ enum MediaType: string
      */
     public function isDefault(): bool
     {
-        return $this->getName() == 'default';
+        return $this->getName() == self::DEFAULT->name;
     }
 
     /**
