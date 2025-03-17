@@ -14,6 +14,7 @@ class ApplicationPolicy
      */
     public function show(User $user, Application $application): bool
     {
+        dd($user->id,$application->user_id);
         return $user->id == $application->user_id;
     }
 }
