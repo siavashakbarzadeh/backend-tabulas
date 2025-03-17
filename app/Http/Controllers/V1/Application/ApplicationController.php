@@ -9,12 +9,15 @@ use App\Models\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Throwable;
 
 class ApplicationController extends Controller
 {
     public function show(Request $request,$application)
     {
+        $application = Application::findOrFail($application);
+        Gate::authorize('show',$application);
         dd($application,$request->user());
     }
 
