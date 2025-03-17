@@ -7,8 +7,13 @@ use App\Models\User;
 
 class ApplicationPolicy
 {
-    public function show(User $user, Application $application)
+    /**
+     * @param User $user
+     * @param Application $application
+     * @return bool
+     */
+    public function show(User $user, Application $application): bool
     {
-        return $user->id != $application->user_id;
+        return $user->id == $application->user_id;
     }
 }
