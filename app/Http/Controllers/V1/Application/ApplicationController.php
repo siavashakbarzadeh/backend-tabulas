@@ -41,11 +41,11 @@ class ApplicationController extends Controller
                     'recipient_office' => $request->recipient_office,
                     'submission_date' => $request->submission_date,
                 ]);
-                $application->privatePublic()
+                $application->privateDisk()
                     ->setCollection(Application::MEDIA_DOCUMENT_COLLECTION)
                     ->setDirectory('applications/documents')
                     ->uploadMedia($request->file('document'));
-                $application->privatePublic()
+                $application->privateDisk()
                     ->setCollection(Application::MEDIA_SIGN_COLLECTION)
                     ->setDirectory('applications/signs')
                     ->uploadMedia($request->file('sign'));

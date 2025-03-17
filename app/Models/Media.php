@@ -34,7 +34,6 @@ class Media extends Model
      */
     public function isPublicDisk(): bool
     {
-        return true;
         return $this->disk === 'public';
     }
 
@@ -49,6 +48,11 @@ class Media extends Model
                     $key => Storage::disk($this->disk)->url($path),
                 ];
             })->toArray();
+    }
+
+    public function getTemporaryUrlFiles()
+    {
+        dd(collect($this->files)->first(),$this->files);
     }
 
     /**

@@ -16,7 +16,6 @@ class MediaResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        dd($this->resource->getPublicFiles());
         return [
             'id' => $this->whenHas('id'),
             'mediaable_type' => $this->whenHas('mediaable_type'),
@@ -24,8 +23,13 @@ class MediaResource extends JsonResource
             'original_name' => $this->whenHas('original_name'),
             'type' => $this->whenHas('type'),
             'files' => $this->when($this->resource->isPublicDisk(), function () {
-
                 return $this->resource->getPublicFiles();
+            }, function () {
+                if ($this->withTemporaryUrls) {
+                    return $this->resource->getTemporaryUrlFiles();
+                } else {
+                    return $this->resource->files;
+                }
             })
         ];
     }
