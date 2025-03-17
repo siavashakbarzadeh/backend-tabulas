@@ -47,7 +47,7 @@ class Media extends Model
             ->mapWithKeys(function ($path, $key) {
 
                 return [
-                    $key => Storage::disk($this->disk)->url($path),
+                    $key => Storage::url($path),
                 ];
             })->toArray();
     }
