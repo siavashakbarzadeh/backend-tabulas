@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Facades\Storage;
 
 class Media extends Model
 {
@@ -37,11 +38,17 @@ class Media extends Model
         return $this->disk === 'public';
     }
 
-    public function getPublicFiles()
+    /**
+     * @return array
+     */
+    public function getPublicFiles(): array
     {
-        dd(collect($this->files)->mapWithKeys(function ($file,$key) {
-            return [$key => $file];
-        }));
+        return collect($this->files)
+            ->mapWithKeys(function ($path, $key) {
+                return [
+                    $key => Storage::disk($this->disk)->url($path),
+                ];
+            })->toArray();
     }
 
     /**
