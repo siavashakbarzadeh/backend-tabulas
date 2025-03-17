@@ -30,6 +30,7 @@ class ApplicationController extends Controller
         try {
             return DB::transaction(function () use ($request) {
                 $application = Application::query()->create([
+                    'user_id' => $request->user()->id,
                     'name' => $request->name,
                     'act_type' => $request->act_type,
                     'recipient_office' => $request->recipient_office,
