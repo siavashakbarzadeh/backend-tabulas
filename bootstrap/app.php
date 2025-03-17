@@ -28,4 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
             }
             return $e;
         });
+        $exceptions->render(function (Throwable $e, Request $request) {
+            dd($e);
+        });
     })->create();
