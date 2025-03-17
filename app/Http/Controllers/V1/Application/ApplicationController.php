@@ -22,7 +22,7 @@ class ApplicationController extends Controller
             'sign',
         ])->findOrFail($application);
         Gate::authorize('show', $application);
-        return ApiResponse::message(trans('messages.success'));
+        dd("salam");
     }
 
     /**
