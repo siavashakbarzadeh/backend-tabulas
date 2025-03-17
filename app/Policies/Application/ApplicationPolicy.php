@@ -9,6 +9,6 @@ class ApplicationPolicy
 {
     public function show(User $user, Application $application)
     {
-        dd($user,$application);
+        return $user->id != $application->user_id;
     }
 }
