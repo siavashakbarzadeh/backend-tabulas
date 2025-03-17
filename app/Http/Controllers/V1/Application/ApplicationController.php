@@ -22,7 +22,8 @@ class ApplicationController extends Controller
             'sign',
         ])->findOrFail($application);
         Gate::authorize('show', $application);
-        return ApiResponse::message("ok");
+        return ApiResponse::addData('application', new ApplicationResource($application))
+            ->success(trans('messages.success'));
     }
 
     /**
