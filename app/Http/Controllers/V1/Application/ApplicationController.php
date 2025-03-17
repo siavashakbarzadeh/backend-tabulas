@@ -49,7 +49,13 @@ class ApplicationController extends Controller
                     ->setCollection(Application::MEDIA_SIGN_COLLECTION)
                     ->setDirectory('applications/signs')
                     ->uploadMedia($request->file('sign'));
-                return ApiResponse::addData('application_id', $application->id)
+                $new_application = Application::query()
+                    ->with([
+                        'document',
+                        'sign',
+                    ])
+                    ->findOrFail($application->id);
+                return ApiResponse::addData('application', new ApplicationResource($new_application))
                     ->success(trans('messages.success'));
             });
         } catch (Throwable $e) {

@@ -25,6 +25,9 @@ class ApplicationResource extends JsonResource
             'document' => $this->whenLoaded('document', function () {
                 return new MediaResource($this->resource->document);
             }),
+            'sign' => $this->whenLoaded('sign', function () {
+                return new MediaResource($this->resource->sign);
+            }),
         ];
     }
 }
