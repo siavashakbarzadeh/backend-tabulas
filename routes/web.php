@@ -7,7 +7,6 @@ Route::group([
 ], function () {
 
     Route::group([
-        'prefix' => 'v1',
         'as' => 'v1.',
     ], function () {
 
