@@ -1,6 +1,7 @@
 <?php
 
 return [
-    'validation_exception' => "Data validation error",
-    'access_denied_http_exception' => "This action is unauthorized.",
+    'validation' => "Data validation error.",
+    'access_denied_http' => "This action is unauthorized.",
+    'not_found_http' => "Not Found.",
 ];

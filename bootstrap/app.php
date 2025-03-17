@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -22,7 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (ValidationException $e, Request $request) {
             if ($request->wantsJson()) {
-                return ApiResponse::message(trans('exceptions.validation_exception'), Response::HTTP_UNPROCESSABLE_ENTITY)
+                return ApiResponse::message(trans('exceptions.validation'), Response::HTTP_UNPROCESSABLE_ENTITY)
                     ->hasError()
                     ->setErrors($e->errors())
                     ->send();
@@ -31,7 +32,15 @@ return Application::configure(basePath: dirname(__DIR__))
         });
         $exceptions->render(function (AccessDeniedHttpException $e, Request $request) {
             if ($request->wantsJson()) {
-                return ApiResponse::message(trans('exceptions.access_denied_http_exception'), Response::HTTP_FORBIDDEN)
+                return ApiResponse::message(trans('exceptions.access_denied_http'), Response::HTTP_FORBIDDEN)
+                    ->hasError()
+                    ->send();
+            }
+            return $e;
+        });
+        $exceptions->render(function (NotFoundHttpException $e, Request $request) {
+            if ($request->wantsJson()) {
+                return ApiResponse::message(trans('exceptions.not_found_http'), Response::HTTP_NOT_FOUND)
                     ->hasError()
                     ->send();
             }
