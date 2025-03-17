@@ -31,10 +31,10 @@ class ApplicationController extends Controller
                     ->setCollection(Application::MEDIA_DOCUMENT_COLLECTION)
                     ->setDirectory('applications/documents')
                     ->uploadMedia($request->file('document'));
-                $application->privateDisk()
+                /*$application->privateDisk()
                     ->setCollection(Application::MEDIA_SIGN_COLLECTION)
                     ->setDirectory('applications/signs')
-                    ->uploadMedia($request->file('sign'));
+                    ->uploadMedia($request->file('sign'));*/
                 return ApiResponse::success(trans('messages.success'));
             });
         } catch (Throwable $e) {
