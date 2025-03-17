@@ -34,7 +34,7 @@ Route::group([
 
             Route::get('/user', [UserController::class, 'user'])->name('user');
 
-            Route::post('/applications/{application}', [ApplicationController::class, 'show'])->name('applications.show');
+            Route::get('/applications/{application}', [ApplicationController::class, 'show'])->name('applications.show');
             Route::post('/applications', [ApplicationController::class, 'store'])->name('applications.store');
 
             Route::get('tabulas/mobile/commissioni', [TabulasMobileController::class, 'commissioni'])->name('tabulas.mobile.commissioni');
