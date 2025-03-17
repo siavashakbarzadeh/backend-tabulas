@@ -7,6 +7,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -28,7 +29,12 @@ return Application::configure(basePath: dirname(__DIR__))
             }
             return $e;
         });
-        $exceptions->render(function (Throwable $e, Request $request) {
-            dd($e);
+        $exceptions->render(function (AccessDeniedHttpException $e, Request $request) {
+            if ($request->wantsJson()) {
+                return ApiResponse::message(trans('exceptions.access_denied_http_exception'), Response::HTTP_FORBIDDEN)
+                    ->hasError()
+                    ->send();
+            }
+            return $e;
         });
     })->create();
