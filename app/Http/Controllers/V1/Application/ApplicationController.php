@@ -5,14 +5,19 @@ namespace App\Http\Controllers\V1\Request;
 use App\Facades\Api\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\Request\ApplicationRequest;
-use App\Http\Resources\V1\Application\ApplicationResource;
 use App\Models\Application;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class ApplicationController extends Controller
 {
+    public function show(Request $request,$application)
+    {
+        dd($application,$request->user());
+    }
+
     /**
      * @param ApplicationRequest $request
      * @return JsonResponse
