@@ -11,9 +11,11 @@ class WebMediaController
     {
         $media = Media::findOrFail($media);
         $files = $media->files;
+
         if (!array_key_exists($file, $files)) {
             abort(404);
         }
-        return response()->download(Storage::disk($media->disk)->path($file));
+
+        return response()->download(Storage::disk($media->disk)->path($files[$file]));
     }
 }
