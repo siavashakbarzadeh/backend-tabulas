@@ -52,7 +52,9 @@ class Media extends Model
 
     public function getTemporaryUrlFiles()
     {
-        dd(collect($this->files)->first(),$this->files);
+        $path = collect($this->files)->first();
+        $temporaryUrl = Storage::disk($this->disk)->temporaryUrl($path, now()->addMinutes(60));
+        dd($path, $this->files, $temporaryUrl);
     }
 
     /**
