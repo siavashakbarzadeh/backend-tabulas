@@ -21,6 +21,9 @@ class ApplicationResource extends JsonResource
             'act_type' => $this->whenHas('act_type'),
             'recipient_office' => $this->whenHas('recipient_office'),
             'submission_date' => $this->whenHas('submission_date', fn($date) => $date->toDateString()),
+            'document' => $this->whenLoaded('document', function () {
+                dd($this->document);
+            })
         ];
     }
 }
