@@ -20,7 +20,7 @@ class ApplicationResource extends JsonResource
             'name' => $this->whenHas('name'),
             'act_type' => $this->whenHas('act_type'),
             'recipient_office' => $this->whenHas('recipient_office'),
-            'submission_date' => $this->whenHas('submission_date'),
+            'submission_date' => $this->whenHas('submission_date', fn($date) => $date->toDateTimeString()),
         ];
     }
 }
