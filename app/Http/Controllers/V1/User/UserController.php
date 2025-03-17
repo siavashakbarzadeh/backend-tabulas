@@ -11,6 +11,6 @@ class UserController extends Controller
 {
     public function user(Request $request){
         return ApiResponse::addData('user', new SingleUserResource($request->user()))
-            ->success(trans('messages.information_was_received_successfully'));
+            ->success(trans('messages.success'));
     }
 }

@@ -14,6 +14,13 @@ class ApplicationResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->whenHas('id'),
+            'user_id' => $this->whenHas('user_id'),
+            'name' => $this->whenHas('name'),
+            'act_type' => $this->whenHas('act_type'),
+            'recipient_office' => $this->whenHas('recipient_office'),
+            'submission_date' => $this->whenHas('submission_date'),
+        ];
     }
 }
