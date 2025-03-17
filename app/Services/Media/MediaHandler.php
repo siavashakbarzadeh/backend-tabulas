@@ -17,7 +17,6 @@ class MediaHandler
     public function upload(UploadedFile $file, string $disk, string $directory = null): array
     {
         $handler = $this->getHandler($file);
-        dd(resolve($handler->getHandler()));
         return resolve($handler->getHandler())->upload($file, $disk, $directory);
     }
 
