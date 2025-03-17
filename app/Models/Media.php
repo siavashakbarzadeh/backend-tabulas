@@ -29,6 +29,20 @@ class Media extends Model
     ];
 
     /**
+     * @return bool
+     */
+    public function isPublicDisk(): bool
+    {
+        return true;
+        return $this->disk === 'public';
+    }
+
+    public function getPublicFiles()
+    {
+        dd($this->files);
+    }
+
+    /**
      * @return BelongsTo
      */
     public function user(): BelongsTo

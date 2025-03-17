@@ -7,7 +7,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class MediaResource extends JsonResource
 {
-    private bool $withUrls = false;
+    private bool $withTemporaryUrls = false;
 
     /**
      * Transform the resource into an array.
@@ -16,19 +16,21 @@ class MediaResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->whenHas('id'),
+            'mediaable_type' => $this->whenHas('mediaable_type'),
+            'mediaable_id' => $this->whenHas('mediaable_id'),
+            'original_name' => $this->whenHas('original_name'),
+            'type' => $this->whenHas('type'),
+            'files' => $this->when($this->resource->isPublicDisk(), function () {
+                return $this->resource->getPublicFiles();
+            })
+        ];
     }
 
-    /**
-     * @return bool
-     */
-    public function hasWithUrls(): bool
+    public function withTemporaryUrls(): static
     {
-        return $this->withUrls;
-    }
-    public function withUrls(): static
-    {
-        $this->withUrls = true;
+        $this->withTemporaryUrls = true;
         return $this;
     }
 }
