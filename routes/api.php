@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\V1\Request\ApplicationController;
+use App\Http\Controllers\V1\Application\ApplicationController;
 use App\Http\Controllers\V1\Tabulas\TabulasKioskController;
 use App\Http\Controllers\V1\Tabulas\TabulasMobileController;
 use App\Http\Controllers\V1\User\Authentication\AuthenticationController;
