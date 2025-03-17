@@ -16,6 +16,6 @@ class WebMediaController
             abort(404);
         }
 
-        return response()->download(Storage::disk($media->disk)->path($files[$file]));
+        return response()->file(Storage::disk($media->disk)->path($files[$file]));
     }
 }
