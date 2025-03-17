@@ -11,7 +11,7 @@ Route::group([
         'as' => 'v1.',
     ], function () {
 
-        Route::get('media/{media}/download/{key}', [WebMediaController::class, 'download'])->name('media.download');
+        Route::get('media/{media}/download/{file}', [WebMediaController::class, 'download'])->name('media.download');
 
     });
 
