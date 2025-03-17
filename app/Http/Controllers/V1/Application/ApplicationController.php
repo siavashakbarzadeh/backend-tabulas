@@ -18,7 +18,7 @@ class ApplicationController extends Controller
     {
         $application = Application::findOrFail($application);
         Gate::authorize('show',$application);
-        dd($application,$request->user());
+        dd($application);
     }
 
     /**
