@@ -7,7 +7,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class MediaResource extends JsonResource
 {
-    private bool $withTemporaryUrls = false;
 
     /**
      * Transform the resource into an array.
@@ -25,18 +24,9 @@ class MediaResource extends JsonResource
             'files' => $this->when($this->resource->isPublicDisk(), function () {
                 return $this->resource->getPublicFiles();
             }, function () {
-                if ($this->withTemporaryUrls) {
-                    return $this->resource->getTemporaryUrlFiles();
-                } else {
-                    return $this->resource->files;
-                }
+                return $this->resource->getTemporaryUrlFiles();
             })
         ];
     }
 
-    public function withTemporaryUrls(): static
-    {
-        $this->withTemporaryUrls = true;
-        return $this;
-    }
 }
