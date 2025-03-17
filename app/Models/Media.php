@@ -45,9 +45,9 @@ class Media extends Model
     {
         return collect($this->files)
             ->mapWithKeys(function ($path, $key) {
-
+                dd(Storage::url($path));
                 return [
-                    $key => Storage::url($path),
+                    $key => Storage::disk($this->disk)->ur($path),
                 ];
             })->toArray();
     }
