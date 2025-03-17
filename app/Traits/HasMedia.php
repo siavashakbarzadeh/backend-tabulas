@@ -35,7 +35,8 @@ trait HasMedia
      */
     public function uploadMedia(UploadedFile $file): Model
     {
-        $mediaHandler = resolve(MediaHandler::class);
+        $mediaHandler = new MediaHandler();
+        dd($mediaHandler);
         $files = $mediaHandler->upload($file, $this->getDisk(), $this->getDirectory());
         return $this->storeModel([
             'user_id' => auth()->id(),
