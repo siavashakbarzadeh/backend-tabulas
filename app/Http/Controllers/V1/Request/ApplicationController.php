@@ -35,10 +35,10 @@ class ApplicationController extends Controller
                     ->setCollection(Application::MEDIA_SIGN_COLLECTION)
                     ->setDirectory('applications/signs')
                     ->uploadMedia($request->file('sign'));
-                return ApiResponse::success(trans('messages.success'));
+                return ApiResponse::addData('application_id', $application->id)
+                    ->success(trans('messages.success'));
             });
         } catch (Throwable $e) {
-            dd($e);
             return ApiResponse::error($e->getMessage());
         }
     }
