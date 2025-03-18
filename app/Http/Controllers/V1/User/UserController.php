@@ -23,7 +23,7 @@ class UserController extends Controller
         $query = $request->get('query', '');
 
         // Query the User model, not the Resource
-        $users = User::where('name', 'like', "%{$query}%")
+        $users = User::where('email', 'like', "%{$query}%")
             ->limit(10)
             ->get();
 
