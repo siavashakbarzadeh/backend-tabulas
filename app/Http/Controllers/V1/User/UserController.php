@@ -31,6 +31,6 @@ class UserController extends Controller
         return ApiResponse::addData(
             'users',
             SingleUserResource::collection($users)
-        )->success();
+        )->success(trans('messages.success'));
     }
 }
