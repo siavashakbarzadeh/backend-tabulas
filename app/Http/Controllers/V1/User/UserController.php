@@ -13,4 +13,10 @@ class UserController extends Controller
         return ApiResponse::addData('user', new SingleUserResource($request->user()))
             ->success(trans('messages.success'));
     }
+    public function search(Request $request)
+{
+    $query = $request->get('query', '');
+    $users = User::where('name', 'like', "%{$query}%")->limit(10)->get();
+    return ApiResponse::addData('users', $users)->success();
+}
 }

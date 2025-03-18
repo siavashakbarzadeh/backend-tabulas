@@ -6,10 +6,10 @@ use App\Traits\HasMedia;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Application extends Model
 {
-    /** @use HasFactory<\Database\Factories\ApplicationFactory> */
     use HasFactory, HasMedia;
 
     const MEDIA_DOCUMENT_COLLECTION = 'application-documents';
@@ -24,11 +24,23 @@ class Application extends Model
         'act_type',
         'recipient_office',
         'submission_date',
+        'status', // New status column
     ];
 
+    /**
+     * Each application belongs to a user.
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Many firmatarios can be attached to an application.
+     */
+    public function firmatarios(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'application_firmatario', 'application_id', 'firmatario_id');
     }
 
     public function document()
@@ -52,5 +64,5 @@ class Application extends Model
             'submission_date' => 'date',
         ];
     }
-
 }
+

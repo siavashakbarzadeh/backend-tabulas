@@ -33,6 +33,7 @@ Route::group([
         ], function () {
 
             Route::get('/user', [UserController::class, 'user'])->name('user');
+            Route::get('users/search', [UserController::class, 'search'])->name("users.search");
 
             Route::get('/applications/{application}', [ApplicationController::class, 'show'])->name('applications.show');
             Route::post('/applications', [ApplicationController::class, 'store'])->name('applications.store');
