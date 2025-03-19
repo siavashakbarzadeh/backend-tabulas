@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use App\Models\User;
 use Throwable;
 
 class ApplicationController extends Controller
@@ -25,17 +26,18 @@ class ApplicationController extends Controller
             return DB::transaction(function () use ($request) {
                 // Parse the submission date
                 $submissionDate = Carbon::parse($request->submission_date);
-
+                
+                $userID = User::where('email',$request->name)->first()->id;
                 // Prepare data for insertion
                 $applicationData = [
-                    'user_id'          => $request->user()->id,
-                    'name'             => $request->user()->name, // "Nome atto" comes from the logged-in user
+                    'user_id'          => $userID,
+                    'name'             => $request->name, // "Nome atto" comes from the logged-in user
                     'act_type'         => $request->act_type,
                     'recipient_office' => $request->recipient_office,
                     'submission_date'  => $request->submission_date,
                     'status'           => $submissionDate->isToday() ? 'finalized' : 'pending',
                 ];
-                dd($request->all(),$applicationData);
+
 
                 // Create the application record
                 $application = Application::query()->create($applicationData);
