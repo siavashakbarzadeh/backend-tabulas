@@ -110,17 +110,20 @@ class ApplicationController extends Controller
 
     public function inbox(Request $request, int $userId): JsonResponse
     {
-        $applications = Application::whereHas('firmatarios', function ($query) use ($userId) {
-            $query->where('users.id', $userId);
-        })->with(['document', 'firmatarios'])->get();
-
+        $applications = Application::where('status', 'confirmed')
+            ->whereHas('firmatarios', function ($query) use ($userId) {
+                $query->where('users.id', $userId);
+            })
+            ->with(['document', 'firmatarios'])
+            ->get();
+    
         return ApiResponse::addData('applications', ApplicationResource::collection($applications))
             ->success("Inbox applications loaded successfully");
     }
-
+    
     /**
      * Get applications for the outbox.
-     * Returns applications where the given user ID is the creator (user_id).
+     * Returns applications where the given user ID is the creator (user_id) and status is confirmed.
      *
      * @param Request $request
      * @param int $userId
@@ -129,10 +132,12 @@ class ApplicationController extends Controller
     public function outbox(Request $request, int $userId): JsonResponse
     {
         $applications = Application::where('user_id', $userId)
-            ->with(['document', 'firmatarios'])->get();
-
+            ->where('status', 'confirmed')
+            ->with(['document', 'firmatarios'])
+            ->get();
+    
         return ApiResponse::addData('applications', ApplicationResource::collection($applications))
             ->success("Outbox applications loaded successfully");
     }
-
+    
 }
