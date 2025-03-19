@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\V1\Application;
 
+use Illuminate\Http\Request;
 use App\Facades\Api\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\Request\ApplicationRequest;
@@ -11,7 +12,6 @@ use App\Models\Application;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
