@@ -108,28 +108,31 @@ class ApplicationController extends Controller
             ->success('Application has been confirmed.');
     }
 
-    // In App\Http\Controllers\V1\Application\ApplicationController.php
-public function inbox(Request $request): JsonResponse
-{
-    $userId = $request->user()->id;
-    // Retrieve applications where the user is among firmatarios
-    $applications = Application::whereHas('firmatarios', function ($query) use ($userId) {
-        $query->where('users.id', $userId);
-    })->with(['document', 'firmatarios'])->get();
+    public function inbox(Request $request, int $userId): JsonResponse
+    {
+        $applications = Application::whereHas('firmatarios', function ($query) use ($userId) {
+            $query->where('users.id', $userId);
+        })->with(['document', 'firmatarios'])->get();
 
-    return ApiResponse::addData('applications', $applications)
-        ->success(trans('messages.success'));
-}
+        return ApiResponse::addData('applications', ApplicationResource::collection($applications))
+            ->success("Inbox applications loaded successfully");
+    }
 
-public function outbox(Request $request): JsonResponse
-{
-    $userId = $request->user()->id;
-    // Retrieve applications created by the logged-in user
-    $applications = Application::where('user_id', $userId)
-        ->with(['document', 'firmatarios'])->get();
+    /**
+     * Get applications for the outbox.
+     * Returns applications where the given user ID is the creator (user_id).
+     *
+     * @param Request $request
+     * @param int $userId
+     * @return JsonResponse
+     */
+    public function outbox(Request $request, int $userId): JsonResponse
+    {
+        $applications = Application::where('user_id', $userId)
+            ->with(['document', 'firmatarios'])->get();
 
-    return ApiResponse::addData('applications', $applications)
-        ->success(trans('messages.success'));
-}
+        return ApiResponse::addData('applications', ApplicationResource::collection($applications))
+            ->success("Outbox applications loaded successfully");
+    }
 
 }
