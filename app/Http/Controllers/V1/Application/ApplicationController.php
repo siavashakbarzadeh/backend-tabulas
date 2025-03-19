@@ -35,6 +35,7 @@ class ApplicationController extends Controller
                     'submission_date'  => $request->submission_date,
                     'status'           => $submissionDate->isToday() ? 'finalized' : 'pending',
                 ];
+                dd($request->all(),$applicationData);
 
                 // Create the application record
                 $application = Application::query()->create($applicationData);
