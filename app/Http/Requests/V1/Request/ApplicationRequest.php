@@ -27,7 +27,6 @@ class ApplicationRequest extends FormRequest
             'recipient_office' => ['required', 'string', 'max:255'],
             'submission_date' => ['required', 'date'],
             'document' => ['required', 'file', 'max:2048'],
-            'sign' => ['required', 'file', 'max:2048'],
         ];
     }
 }
