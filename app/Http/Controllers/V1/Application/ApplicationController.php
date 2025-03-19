@@ -102,7 +102,7 @@ class ApplicationController extends Controller
     public function confirm(Request $request, Application $application): JsonResponse
     {
         // Example: just update the status to 'declined'
-        $application->update(['status' => 'declined']);
+        $application->update(['status' => 'confirmed']);
 
         return ApiResponse::addData('application', new ApplicationResource($application))
             ->success('Application has been confirmed.');
