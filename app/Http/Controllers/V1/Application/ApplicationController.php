@@ -6,19 +6,19 @@ use App\Facades\Api\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\Request\ApplicationRequest;
 use App\Http\Resources\V1\Application\ApplicationResource;
-use App\Jobs\ProcessApplicationJob; // Your job to process applications
+use App\Jobs\ProcessApplicationJob;
 use App\Models\Application;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
-use App\Models\User;
 use Throwable;
 
 class ApplicationController extends Controller
 {
     /**
-     * Store a newly created Application (Option B).
+     * Store a new application in the database.
      */
     public function store(ApplicationRequest $request): JsonResponse
     {
@@ -26,23 +26,28 @@ class ApplicationController extends Controller
             return DB::transaction(function () use ($request) {
                 // Parse the submission date
                 $submissionDate = Carbon::parse($request->submission_date);
-                
-                $userID = User::where('email',$request->name)->first()->id;
+
+                // If 'name' is the email of the user, find that user's ID
+                $user = User::where('email', $request->name)->first();
+                if (!$user) {
+                    throw new \Exception("User with email {$request->name} not found.");
+                }
+
                 // Prepare data for insertion
                 $applicationData = [
-                    'user_id'          => $userID,
-                    'name'             => $request->name, // "Nome atto" comes from the logged-in user
+                    'user_id'          => $user->id,
+                    'name'             => $request->name, // "Nome atto" from the form
                     'act_type'         => $request->act_type,
                     'recipient_office' => $request->recipient_office,
                     'submission_date'  => $request->submission_date,
-                    'status'           => $submissionDate->isToday() ? 'finalized' : 'pending',
+                    'status'           => 'pending',
                 ];
-
 
                 // Create the application record
                 $application = Application::query()->create($applicationData);
 
                 // Attach firmatarios if provided (expects an array of user IDs)
+                // e.g. "firmatario" => [2, 5, 10]
                 if ($request->has('firmatario')) {
                     $application->firmatarios()->sync($request->firmatario);
                 }
@@ -60,7 +65,7 @@ class ApplicationController extends Controller
                     ->uploadMedia($request->file('document'));
 
                 // Refresh and load relationships (including firmatarios)
-                $application = $application->refresh()->load(['document', 'firmatarios']);
+                $application->refresh()->load(['document', 'firmatarios']);
 
                 return ApiResponse::addData('application', new ApplicationResource($application))
                     ->success(trans('messages.success'));
@@ -71,15 +76,35 @@ class ApplicationController extends Controller
     }
 
     /**
-     * (Optional) Show method as before, or any other methods.
+     * Show a single application (including relationships).
      */
-    public function show(Request $request, $application)
+    public function show(Request $request, Application $application): JsonResponse
     {
-        $application = Application::with(['document', 'firmatarios'])->findOrFail($application);
-        Gate::authorize('show', $application);
+        // Eager load any relationships you need (document, firmatarios, etc.)
+        $application->load(['document', 'firmatarios']);
 
+        // Return the data via your resource
         return ApiResponse::addData('application', new ApplicationResource($application))
             ->success(trans('messages.success'));
     }
-}
 
+    /**
+     * Decline the application (e.g. set status to "declined" or delete it).
+     */
+    public function decline(Request $request, Application $application): JsonResponse
+    {
+        // Example: just update the status to 'declined'
+        $application->update(['status' => 'declined']);
+
+        return ApiResponse::addData('application', new ApplicationResource($application))
+            ->success('Application has been declined.');
+    }
+    public function confirm(Request $request, Application $application): JsonResponse
+    {
+        // Example: just update the status to 'declined'
+        $application->update(['status' => 'declined']);
+
+        return ApiResponse::addData('application', new ApplicationResource($application))
+            ->success('Application has been confirmed.');
+    }
+}
