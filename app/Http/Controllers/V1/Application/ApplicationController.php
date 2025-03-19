@@ -107,4 +107,29 @@ class ApplicationController extends Controller
         return ApiResponse::addData('application', new ApplicationResource($application))
             ->success('Application has been confirmed.');
     }
+
+    // In App\Http\Controllers\V1\Application\ApplicationController.php
+public function inbox(Request $request): JsonResponse
+{
+    $userId = $request->user()->id;
+    // Retrieve applications where the user is among firmatarios
+    $applications = Application::whereHas('firmatarios', function ($query) use ($userId) {
+        $query->where('users.id', $userId);
+    })->with(['document', 'firmatarios'])->get();
+
+    return ApiResponse::addData('applications', $applications)
+        ->success(trans('messages.success'));
+}
+
+public function outbox(Request $request): JsonResponse
+{
+    $userId = $request->user()->id;
+    // Retrieve applications created by the logged-in user
+    $applications = Application::where('user_id', $userId)
+        ->with(['document', 'firmatarios'])->get();
+
+    return ApiResponse::addData('applications', $applications)
+        ->success(trans('messages.success'));
+}
+
 }

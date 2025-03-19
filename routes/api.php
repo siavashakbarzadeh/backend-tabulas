@@ -39,6 +39,8 @@ Route::group([
             Route::post('/applications', [ApplicationController::class, 'store'])->name('applications.store');
             Route::post('/applications/{application}/decline', [ApplicationController::class, 'decline']);
             Route::post('/applications/{application}/confirm', [ApplicationController::class, 'confirm']);
+            Route::get('/applications/inbox', [ApplicationController::class, 'inbox']);
+            Route::get('/applications/outbox', [ApplicationController::class, 'outbox']);
 
             Route::get('tabulas/mobile/commissioni', [TabulasMobileController::class, 'commissioni'])->name('tabulas.mobile.commissioni');
             Route::get('tabulas/mobile/ultimiatti', [TabulasMobileController::class, 'ultimiatti'])->name('tabulas.mobile.ultimiatti');
