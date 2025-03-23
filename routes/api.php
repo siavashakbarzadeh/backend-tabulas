@@ -5,7 +5,6 @@ use App\Http\Controllers\V1\Tabulas\TabulasKioskController;
 use App\Http\Controllers\V1\Tabulas\TabulasMobileController;
 use App\Http\Controllers\V1\User\Authentication\AuthenticationController;
 use App\Http\Controllers\V1\Notification\SubscriptionController;
-use App\Http\Controllers\V1\Notification\NtfC;
 use App\Http\Controllers\V1\User\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -61,7 +60,7 @@ Route::group([
             Route::get('tabulas/kiosk/webtv', [TabulasKioskController::class, 'webtv'])->name('tabulas.kiosk.webtv');
             Route::get('tabulas/kiosk/pillolevideo', [TabulasKioskController::class, 'pillolevideo'])->name('tabulas.kiosk.pillolevideo');
 
-            Route::get('/push-notification', [NtfC::class, 'sendPushNotification'])->name('push-notification');
+            Route::get('/push-notification', [SubscriptionController::class, 'sendPushNotification'])->name('push-notification');
             Route::post('/save-subscription', [SubscriptionController::class, 'saveSubscription'])->name('save-subscription');
         });
 
