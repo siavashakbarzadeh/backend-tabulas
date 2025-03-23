@@ -77,9 +77,9 @@ class SubscriptionController extends Controller
         // VAPID authentication configuration (use your env or hard-coded keys)
         $auth = [
             'VAPID' => [
-                'subject' => 'mailto:your-email@example.com',
-                'publicKey' => env('VAPID_PUBLIC_KEY'),
-                'privateKey' => env('VAPID_PRIVATE_KEY'),
+                'subject' => 'mailto: <a.allahverdi@m.icoa.it>',
+                'publicKey' => 'BDHaWPVr-4KGYKxoavcU_w2TUq5XqCDQHQQdJj4nhBBp2dqTExCrr8f2vUCr5Enp-dGkCD4Omohgk8qRjHtszBs',
+                'privateKey' => 'XxzQohtjPmhgGE1IbWVXIdJYUGSXIBddDLf1Qv_j-Us',
             ],
         ];
 
