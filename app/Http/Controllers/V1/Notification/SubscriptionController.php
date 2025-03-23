@@ -118,12 +118,15 @@ class SubscriptionController extends Controller
         $subscriptionData = $request->all();
 
 
-        // Save the subscription in the database (assuming a Subscription model exists)
-        Subscription::create([
-            'endpoint' => $subscriptionData['endpoint'],
-            'p256dh'   => $subscriptionData['keys']['p256dh'],
-            'auth'     => $subscriptionData['keys']['auth'],
-        ]);
+        $existingSubscription = Subscription::where('auth', $subscriptionData['keys']['auth'])->first();
+
+        if (!$existingSubscription) {
+            Subscription::create([
+                'endpoint' => $subscriptionData['endpoint'],
+                'p256dh'   => $subscriptionData['keys']['p256dh'],
+                'auth'     => $subscriptionData['keys']['auth'],
+            ]);
+        }
 
         return response()->json(['success' => true]);
     }
