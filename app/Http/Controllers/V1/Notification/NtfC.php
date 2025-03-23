@@ -7,7 +7,7 @@ use App\Models\Subscription;
 use Minishlink\WebPush\WebPush;
 use Minishlink\WebPush\Subscription as WebPushSubscription;
 
-class NotificationController extends Controller
+class NtfC extends Controller
 {
     /**
      * Send a push notification to all subscribed clients.
