@@ -62,7 +62,7 @@ Route::group([
             Route::get('tabulas/kiosk/pillolevideo', [TabulasKioskController::class, 'pillolevideo'])->name('tabulas.kiosk.pillolevideo');
 
             Route::get('/push-notification', [PushNotificationController::class, 'sendPushNotification'])->name('push-notification');
-            Route::get('/save-subscription', [SubscriptionController::class, 'saveSubscription'])->name('save-subscription');
+            Route::post('/save-subscription', [SubscriptionController::class, 'saveSubscription'])->name('save-subscription');
         });
 
     });
