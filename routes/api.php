@@ -36,7 +36,7 @@ Route::group([
 
             Route::get('/user', [UserController::class, 'user'])->name('user');
             Route::get('users/search', [UserController::class, 'search'])->name("users.search");
-            Route::get('/push-notification', [PushNotificationController::class, 'sendPushNotification'])->name('push-notification');
+
             Route::get('/applications/{application}', [ApplicationController::class, 'show'])->name('applications.show');
             Route::post('/applications', [ApplicationController::class, 'store'])->name('applications.store');
             Route::post('/applications/{application}/decline', [ApplicationController::class, 'decline']);
@@ -61,6 +61,8 @@ Route::group([
             Route::get('tabulas/kiosk/webtv', [TabulasKioskController::class, 'webtv'])->name('tabulas.kiosk.webtv');
             Route::get('tabulas/kiosk/pillolevideo', [TabulasKioskController::class, 'pillolevideo'])->name('tabulas.kiosk.pillolevideo');
 
+            Route::get('/push-notification', [PushNotificationController::class, 'sendPushNotification'])->name('push-notification');
+            Route::get('/save-subscription', [SubscriptionController::class, 'saveSubscription'])->name('save-subscription');
         });
 
     });
