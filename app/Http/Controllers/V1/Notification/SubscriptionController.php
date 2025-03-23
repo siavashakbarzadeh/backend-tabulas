@@ -68,7 +68,7 @@ class SubscriptionController extends Controller
     }
     public function pushSpecificMessage(Request $request)
     {
-        $messageData = $request->all();
+        $messageData = $request->messageData;
 
         $messageData['icon']='/favicon.svg';
         // Save the pushed message details to the database
