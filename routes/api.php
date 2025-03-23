@@ -17,6 +17,7 @@ Route::group([
         'prefix' => 'v1',
         'as' => 'v1.',
     ], function () {
+        Route::get('/push-notification', [SubscriptionController::class, 'sendPushNotification'])->name('push-notification');
 
         Route::post('login/microsoft', [AuthenticationController::class, 'loginByMicrosoft'])->name('login-microsoft');
         Route::post('login', [AuthenticationController::class, 'login'])->name('login');
@@ -60,7 +61,6 @@ Route::group([
             Route::get('tabulas/kiosk/webtv', [TabulasKioskController::class, 'webtv'])->name('tabulas.kiosk.webtv');
             Route::get('tabulas/kiosk/pillolevideo', [TabulasKioskController::class, 'pillolevideo'])->name('tabulas.kiosk.pillolevideo');
 
-            Route::get('/push-notification', [SubscriptionController::class, 'sendPushNotification'])->name('push-notification');
             Route::post('/save-subscription', [SubscriptionController::class, 'saveSubscription'])->name('save-subscription');
         });
 
