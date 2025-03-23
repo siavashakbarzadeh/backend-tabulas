@@ -17,8 +17,8 @@ Route::group([
         'prefix' => 'v1',
         'as' => 'v1.',
     ], function () {
-        Route::get('/push-notification', [SubscriptionController::class, 'sendPushNotification'])->name('push-notification');
-
+        Route::get('/test-push', [SubscriptionController::class, 'testPush'])->name('test-push');
+        Route::post('/push--notification', [SubscriptionController::class, 'pushSpecificMessage']);
         Route::post('login/microsoft', [AuthenticationController::class, 'loginByMicrosoft'])->name('login-microsoft');
         Route::post('login', [AuthenticationController::class, 'login'])->name('login');
         Route::post('register', [AuthenticationController::class, 'register'])->name('register');

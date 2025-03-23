@@ -5,6 +5,7 @@ namespace App\Http\Controllers\V1\Notification;
 use App\Facades\Api\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Subscription;
+use App\Models\PushedMessage;
 use Minishlink\WebPush\WebPush;
 use Minishlink\WebPush\Subscription as WebPushSubscription;
 
@@ -19,13 +20,13 @@ class SubscriptionController extends Controller
      * @param Request $request
      * @return void
      */
-    public function sendPushNotification(Request $request)
+    public function testPush(Request $request)
     {
         // Retrieve message data from the request or use default values
         $messageData = $request->input('messageData', [
-            'title' => 'Hello!',
-            'body'  => 'You have a new notification.',
-            'icon'  => '/icon.png',
+            'title' => 'Ciao Senato!',
+            'body'  => 'Hai una nuova notifica!',
+            'icon'  => '/favicon.svg',
             'url'   => '/',
         ]);
 
@@ -63,23 +64,65 @@ class SubscriptionController extends Controller
                 echo "Failed to send notification for subscription: {$endpoint}. Reason: {$report->getReason()}\n";
             }
         }
+        $pushedMessage = PushedMessage::create($messageData);
+    }
+    public function pushSpecificMessage(array $messageData)
+    {
+        $messageData['icon']='/favicon.svg';
+        // Save the pushed message details to the database
+        $pushedMessage = PushedMessage::create($messageData);
+
+        // VAPID authentication configuration (use your env or hard-coded keys)
+        $auth = [
+            'VAPID' => [
+                'subject' => 'mailto:your-email@example.com',
+                'publicKey' => env('VAPID_PUBLIC_KEY'),
+                'privateKey' => env('VAPID_PRIVATE_KEY'),
+            ],
+        ];
+
+        $webPush = new WebPush($auth);
+
+        // Retrieve all subscriptions from the database
+        $subscriptions = Subscription::all();
+
+        foreach ($subscriptions as $sub) {
+            $subscription = WebPushSubscription::create([
+                'endpoint' => $sub->endpoint,
+                'publicKey' => $sub->p256dh,
+                'authToken' => $sub->auth,
+                'contentEncoding' => 'aesgcm', // Adjust if necessary
+            ]);
+
+            $webPush->queueNotification($subscription, json_encode($messageData));
+        }
+
+        // Flush the queue and send notifications
+        foreach ($webPush->flush() as $report) {
+            $endpoint = $report->getRequest()->getUri()->__toString();
+            if ($report->isSuccess()) {
+                echo "Notification sent successfully for subscription: {$endpoint}\n";
+            } else {
+                echo "Failed to send notification for subscription: {$endpoint}. Reason: {$report->getReason()}\n";
+            }
+        }
+
+        return $pushedMessage;
     }
 
 
     public function saveSubscription(Request $request)
-{
-    $subscriptionData = $request->all();
+    {
+        $subscriptionData = $request->all();
 
-    // Optionally validate the subscription data here
 
-    // Save the subscription in the database (assuming a Subscription model exists)
-    Subscription::create([
-        'endpoint' => $subscriptionData['endpoint'],
-        'p256dh'   => $subscriptionData['keys']['p256dh'],
-        'auth'     => $subscriptionData['keys']['auth'],
-        // Optionally, associate this with a user if authentication is implemented
-    ]);
+        // Save the subscription in the database (assuming a Subscription model exists)
+        Subscription::create([
+            'endpoint' => $subscriptionData['endpoint'],
+            'p256dh'   => $subscriptionData['keys']['p256dh'],
+            'auth'     => $subscriptionData['keys']['auth'],
+        ]);
 
-    return response()->json(['success' => true]);
-}
+        return response()->json(['success' => true]);
+    }
 }
