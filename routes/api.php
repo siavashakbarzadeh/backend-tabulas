@@ -4,6 +4,8 @@ use App\Http\Controllers\V1\Application\ApplicationController;
 use App\Http\Controllers\V1\Tabulas\TabulasKioskController;
 use App\Http\Controllers\V1\Tabulas\TabulasMobileController;
 use App\Http\Controllers\V1\User\Authentication\AuthenticationController;
+use App\Http\Controllers\V1\Notification\SubscriptionController;
+use App\Http\Controllers\V1\Notification\PushNotificationController;
 use App\Http\Controllers\V1\User\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -34,7 +36,7 @@ Route::group([
 
             Route::get('/user', [UserController::class, 'user'])->name('user');
             Route::get('users/search', [UserController::class, 'search'])->name("users.search");
-
+            Route::get('/push-notification', [PushNotificationController::class, 'sendPushNotification'])->name('push-notification');
             Route::get('/applications/{application}', [ApplicationController::class, 'show'])->name('applications.show');
             Route::post('/applications', [ApplicationController::class, 'store'])->name('applications.store');
             Route::post('/applications/{application}/decline', [ApplicationController::class, 'decline']);
