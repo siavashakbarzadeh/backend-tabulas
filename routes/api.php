@@ -19,10 +19,13 @@ Route::group([
     ], function () {
         Route::get('/test-push', [SubscriptionController::class, 'testPush'])->name('test-push');
         Route::post('/push-notification', [SubscriptionController::class, 'pushSpecificMessage']);
+        Route::get('/pushed-messages', [SubscriptionController::class, 'getAllMessages']);
+        
+        
         Route::post('login/microsoft', [AuthenticationController::class, 'loginByMicrosoft'])->name('login-microsoft');
         Route::post('login', [AuthenticationController::class, 'login'])->name('login');
         Route::post('register', [AuthenticationController::class, 'register'])->name('register');
-        Route::get('/pushed-messages', [PushedMessageController::class, 'getAllMessages']);
+
 
 
         Route::get('test', function () {
