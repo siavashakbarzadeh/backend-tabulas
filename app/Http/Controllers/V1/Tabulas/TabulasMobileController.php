@@ -26,68 +26,80 @@ class TabulasMobileController
      */
     public function ultimdossier()
     {
-        // Read the raw dossier data from your JSON/text file
-        $rawData = file_get_contents(storage_path('jsons/mobile/ultimdossier.json'));
+        // Read the JSON file (adjust the path as needed)
+        $json = file_get_contents(storage_path('jsons/mobile/ultimdossier.json'));
+        $data = json_decode($json, true);
 
-        // Parse the raw data into structured records
-        $parsedRecords = $this->parseDossierData($rawData);
-        dd($parsedRecords);
-        // Return the structured data as JSON
-        return response()->json($parsedRecords);
-    }
-
-    protected function parseDossierData($rawData)
-    {
-        $records = [];
-        // Split raw data into records using empty lines as separators
-        $rawRecords = preg_split("/\n\s*\n/", $rawData);
-        foreach ($rawRecords as $recordStr) {
-            // Split record into lines and trim whitespace
-            $lines = array_filter(array_map('trim', explode("\n", $recordStr)));
-            if (empty($lines)) {
-                continue;
+        // Assume the main content is in the docNode named "Tutti i contenuti"
+        $docNodes = $data['docNodes'] ?? [];
+        $tutti = null;
+        foreach ($docNodes as $node) {
+            if (isset($node['name']) && $node['name'] === "Tutti i contenuti") {
+                $tutti = $node;
+                break;
             }
-            // The first line is the header.
-            // Split header by tabs or multiple spaces.
-            $headerParts = preg_split("/\t+|\s{2,}/", $lines[0]);
-            $headerParts = array_values(array_filter($headerParts, function ($p) {
-                return trim($p) !== "";
-            }));
-            $documentIdentifier = isset($headerParts[0]) ? $headerParts[0] : "-";
-            $servizio = isset($headerParts[1]) ? $headerParts[1] : "-";
-            $date = isset($headerParts[2]) ? $headerParts[2] : "-";
-            $label = isset($headerParts[3]) ? $headerParts[3] : "-";
+        }
+        // Fallback if not found: use the first docNode
+        if (!$tutti && count($docNodes) > 0) {
+            $tutti = $docNodes[0];
+        }
+        
+        $htmlContent = $tutti['docContentStreamContent'] ?? "";
+        // Split the content into chunks by <HR class="defrss">
+        $chunks = preg_split('/<HR class="defrss">/', $htmlContent);
+        $dossiers = [];
 
-            // The remaining lines are description and references.
-            $description = "";
+        foreach ($chunks as $chunk) {
+            $chunk = trim($chunk);
+            if (empty($chunk)) continue;
+
+            // Load chunk HTML into DOMDocument (suppress warnings)
+            $dom = new \DOMDocument();
+            libxml_use_internal_errors(true);
+            $dom->loadHTML($chunk);
+            libxml_clear_errors();
+            $xpath = new \DOMXPath($dom);
+
+            // Extract the document identifier from the first <h5> element
+            $h5Nodes = $xpath->query('//h5');
+            $documentIdentifier = $h5Nodes->length > 0 ? trim($h5Nodes->item(0)->textContent) : "-";
+
+            // Extract servizio from the first <p><strong> element
+            $servizioNodes = $xpath->query('//p/strong');
+            $servizio = $servizioNodes->length > 0 ? trim($servizioNodes->item(0)->textContent) : "-";
+
+            // Extract description from the first <p><em> element
+            $descriptionNodes = $xpath->query('//p/em');
+            $description = $descriptionNodes->length > 0 ? trim($descriptionNodes->item(0)->textContent) : "-";
+
+            // Extract references from li elements within a ul having class "dossier_riferimenti"
+            $refNodes = $xpath->query('//div[contains(@class, "annotazione")]//ul[contains(@class, "dossier_riferimenti")]/li');
             $riferimenti = [];
-            $inReferences = false;
-            for ($i = 1; $i < count($lines); $i++) {
-                $line = $lines[$i];
-                if (strpos($line, "Riferimenti:") === 0) {
-                    $inReferences = true;
-                    $refLine = trim(str_replace("Riferimenti:", "", $line));
-                    if ($refLine !== "") {
-                        $riferimenti[] = $refLine;
-                    }
-                } elseif ($inReferences) {
-                    $riferimenti[] = $line;
-                } else {
-                    $description .= ($description ? " " : "") . $line;
-                }
+            foreach ($refNodes as $ref) {
+                $riferimenti[] = trim($ref->textContent);
             }
 
-            $records[] = [
+            // Extract the date from the div with class "data" > span.annotazione
+            $dateNodes = $xpath->query('//div[contains(@class, "data")]/span[contains(@class, "annotazione")]');
+            $date = $dateNodes->length > 0 ? trim($dateNodes->item(0)->textContent) : "-";
+
+            // Extract label from the first <p><a> element (e.g. link text "Testo dossier")
+            $labelNodes = $xpath->query('//p/a');
+            $label = $labelNodes->length > 0 ? trim($labelNodes->item(0)->textContent) : "-";
+
+            $dossiers[] = [
                 'documentIdentifier' => $documentIdentifier,
                 'servizio'           => $servizio,
+                'description'        => $description,
                 'date'               => $date,
                 'label'              => $label,
-                'description'        => $description,
-                'riferimenti'        => $riferimenti
+                'riferimenti'        => $riferimenti,
             ];
         }
-        return $records;
+
+        return response()->json($dossiers);
     }
+    
 
 
     /**
