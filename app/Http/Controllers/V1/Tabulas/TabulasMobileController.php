@@ -31,7 +31,7 @@ class TabulasMobileController
 
         // Parse the raw data into structured records
         $parsedRecords = $this->parseDossierData($rawData);
-
+        dd($parsedRecords);
         // Return the structured data as JSON
         return response()->json($parsedRecords);
     }
