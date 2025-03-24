@@ -111,6 +111,12 @@ class SubscriptionController extends Controller
 
         return $pushedMessage;
     }
+    public function getAllMessages(Request $request)
+    {
+        $messages = PushedMessage::orderBy('created_at', 'desc')->get();
+        return response()->json($messages);
+    }
+    
 
 
     public function saveSubscription(Request $request)

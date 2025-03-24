@@ -22,6 +22,8 @@ Route::group([
         Route::post('login/microsoft', [AuthenticationController::class, 'loginByMicrosoft'])->name('login-microsoft');
         Route::post('login', [AuthenticationController::class, 'login'])->name('login');
         Route::post('register', [AuthenticationController::class, 'register'])->name('register');
+        Route::get('/pushed-messages', [PushedMessageController::class, 'getAllMessages']);
+
 
         Route::get('test', function () {
             return [
@@ -60,7 +62,6 @@ Route::group([
             Route::get('tabulas/kiosk/bicamedeleg', [TabulasKioskController::class, 'bicamedeleg'])->name('tabulas.kiosk.bicamedeleg');
             Route::get('tabulas/kiosk/webtv', [TabulasKioskController::class, 'webtv'])->name('tabulas.kiosk.webtv');
             Route::get('tabulas/kiosk/pillolevideo', [TabulasKioskController::class, 'pillolevideo'])->name('tabulas.kiosk.pillolevideo');
-
             Route::post('/save-subscription', [SubscriptionController::class, 'saveSubscription'])->name('save-subscription');
         });
 
