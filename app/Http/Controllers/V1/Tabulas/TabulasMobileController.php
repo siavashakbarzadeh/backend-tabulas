@@ -18,8 +18,99 @@ class TabulasMobileController
      */
     public function ultimiatti()
     {
-        return $this->_pathToJson(storage_path('jsons/mobile/ultimiatti.json'));
+        // 1. Read the JSON file
+        $jsonPath = storage_path('jsons/mobile/ultimiatti.json');
+        $jsonData = file_get_contents($jsonPath);
+        $data = json_decode($jsonData, true);
+    
+        // 2. Extract docNodes and skip "Tutti i contenuti"
+        $docNodes = $data['docNodes'] ?? [];
+        $filteredNodes = array_filter($docNodes, function ($node) {
+            return isset($node['name']) && $node['name'] !== "Tutti i contenuti";
+        });
+    
+        $parsedResults = [];
+    
+        // Simple regex patterns for date and seduta
+        // Adjust to match your real patterns (e.g. date dd/mm/yyyy, seduta/e n. ###)
+        $datePattern   = '/^\d{1,2}\/\d{1,2}\/\d{4}$/i';
+        $sedutaPattern = '/seduta/i';
+    
+        foreach ($filteredNodes as $node) {
+            // Use node "name" as the document identifier
+            $documentIdentifier = $node['name'] ?? "-";
+    
+            // docContentUrl might be useful to store
+            $docContentUrl = $node['docContentUrl'] ?? "-";
+    
+            // Load HTML from "docContentStreamContent"
+            $htmlContent = $node['docContentStreamContent'] ?? "";
+            $dom = new \DOMDocument();
+            libxml_use_internal_errors(true);
+            $dom->loadHTML($htmlContent);
+            libxml_clear_errors();
+            $xpath = new \DOMXPath($dom);
+    
+            // 3. Parse <p> elements for date, seduta, description lines
+            $pNodes = $xpath->query('//p');
+            $date = "-";
+            $seduta = "-";
+            $descriptionLines = []; // We'll collect extra lines here
+    
+            foreach ($pNodes as $p) {
+                $text = trim($p->textContent);
+    
+                // Check if it matches the date pattern
+                if (preg_match($datePattern, $text)) {
+                    $date = $text;
+                }
+                // Check if it looks like a seduta
+                else if (preg_match($sedutaPattern, $text)) {
+                    $seduta = $text;
+                }
+                // Otherwise, treat as part of the description
+                else {
+                    // If it's not empty or doesn't match known patterns
+                    if (!empty($text)) {
+                        $descriptionLines[] = $text;
+                    }
+                }
+            }
+    
+            // Combine any leftover lines into a single string
+            // Adjust if you want to store them separately
+            $description = implode(" | ", $descriptionLines);
+            if (empty($description)) {
+                $description = "-";
+            }
+    
+            // 4. Extract PDF link (the <a> whose href contains ".pdf")
+            $pdfNodes = $xpath->query('//a[contains(@href, ".pdf")]');
+            $pdf = "-";
+            if ($pdfNodes->length > 0) {
+                // If you want the full HTML
+                // $pdf = $dom->saveHTML($pdfNodes->item(0));
+    
+                // Or if you just want the link, e.g.:
+                $pdfHref = $pdfNodes->item(0)->getAttribute('href');
+                $pdf = $pdfHref ?: "-";
+            }
+    
+            // Build the structured record
+            $parsedResults[] = [
+                'documentIdentifier' => $documentIdentifier,
+                'date'               => $date,
+                'seduta'             => $seduta,
+                'description'        => $description,
+                'pdf'                => $pdf,
+                'docContentUrl'      => $docContentUrl,
+            ];
+        }
+    
+        // Return JSON
+        return response()->json($parsedResults);
     }
+    
 
     /**
      * @return mixed
