@@ -136,4 +136,105 @@ class SubscriptionController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+
+        /** POST /device/register */
+    public function registerMob(Request $request)
+    {
+        $validated = $request->validate([
+            'token'    => 'required|string',
+            'platform' => 'required|in:android,ios,web',
+        ]);
+
+        $device = DeviceToken::updateOrCreate(
+            ['token' => $validated['token']],
+            [
+                'user_id'      => $request->user()->id,
+                'platform'     => $validated['platform'],
+                'last_seen_at' => now(),
+            ],
+        );
+
+        return response()->json($device, $device->wasRecentlyCreated ? 201 : 200);
+    }
+
+        /** DELETE /device/{token} */
+    public function unregisterMob(Request $request, string $token)
+    {
+        DeviceToken::where('token', $token)
+            ->where('user_id', $request->user()->id)
+            ->delete();
+
+        return response()->noContent();
+    }
+
+        /** POST /push – Send a single- or multi-device push via FCM */
+    public function pushMob(Request $request)
+    {
+        $payload = $request->validate([
+            'title'   => 'required|string|max:64',
+            'body'    => 'required|string|max:512',
+            'data'    => 'array',
+            'user_id' => 'integer|exists:users,id',    // optional: broadcast to a user
+            'token'   => 'string',                     // optional: broadcast to a single device
+        ]);
+
+        // --- 1. Resolve device tokens ---------------------------------------
+        $query = DeviceToken::query()->whereNotNull('token');
+
+        if (isset($payload['user_id'])) {
+            $query->where('user_id', $payload['user_id']);
+        } elseif (isset($payload['token'])) {
+            $query->where('token', $payload['token']);
+        }
+
+        $tokens = $query->pluck('token')->all();
+        if (blank($tokens)) {
+            return response()->json(['message' => 'No target devices'], 404);
+        }
+
+        // --- 2. Build FCM request body --------------------------------------
+        $message = [
+            'message' => [
+                'token'        => count($tokens) === 1 ? $tokens[0] : null,
+                'tokens'       => count($tokens) > 1  ? $tokens       : null,
+                'notification' => [
+                    'title' => $payload['title'],
+                    'body'  => $payload['body'],
+                ],
+                'data' => $payload['data'] ?? [],
+                'android' => [
+                    'priority' => 'high',
+                ],
+                'apns' => [
+                    'headers' => [
+                        'apns-priority' => '10',
+                    ],
+                ],
+            ],
+        ];
+
+        // --- 3. Send ---------------------------------------------------------
+        $accessToken = cache()->remember('fcm_access_token', now()->addMinutes(50), function () {
+            // Uses service-account JSON stored as env var
+            $keyFile    = storage_path('app/tabulas-62017-firebase-adminsdk-fbsvc-6cf4c9f1bf.json');
+            $client     = new \Google_Client();
+            $client->setAuthConfig($keyFile);
+            $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
+            $client->fetchAccessTokenWithAssertion();
+            return $client->getAccessToken()['access_token'] ?? null;
+        });
+
+        $response = Http::withToken($accessToken)
+            ->withHeaders(['Content-Type' => 'application/json; UTF-8'])
+            ->post(sprintf(
+                'https://fcm.googleapis.com/v1/projects/%s/messages:send',
+                'tabulas-62017'
+            ), $message);
+
+        return response()->json($response->json(), $response->status());
+    }
+
+
+
 }

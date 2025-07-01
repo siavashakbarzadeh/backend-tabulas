@@ -27,6 +27,11 @@ Route::group([
         Route::post('register', [AuthenticationController::class, 'register'])->name('register');
 
 
+            Route::post('device/register',   [SubscriptionController::class, 'registerMob']);
+    Route::delete('device/{token}',  [SubscriptionController::class, 'unregisterMob']);
+    Route::post('push',              [SubscriptionController::class, 'pushMob']);
+
+
 
         Route::get('test', function () {
             return [
