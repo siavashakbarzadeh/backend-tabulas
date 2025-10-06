@@ -7,13 +7,12 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
 class CheckRole
 {
     /**
-     * Handle an incoming request.
-     *
      * بررسی نقش کاربر بر اساس JWT که از Microsoft دریافت شده.
      */
     public function handle(Request $request, Closure $next, string $requiredRole): Response
@@ -27,18 +26,20 @@ class CheckRole
         $jwt = substr($authHeader, 7);
 
         try {
-            // دریافت JWKs از Azure برای اعتبارسنجی توکن
-            $jwksUri = "https://login.microsoftonline.com/common/discovery/v2.0/keys";
-            $jwks = Http::get($jwksUri)->json();
-            $keys = JWK::parseKeySet($jwks);
+            // 1️⃣ ابتدا سعی کن JWKها را از cache بگیری
+            $keys = Cache::remember('azure_jwks_keys', now()->addHours(24), function () {
+                $jwksUri = "https://login.microsoftonline.com/common/discovery/v2.0/keys";
+                $jwks = Http::get($jwksUri)->json();
+                return JWK::parseKeySet($jwks);
+            });
 
-            // Decode + Verify
+            // 2️⃣ Decode + Verify JWT با کلیدهای cached
             $decoded = (array) JWT::decode($jwt, $keys);
 
-            // ذخیره payload داخل request برای دسترسی در Controller
+            // ذخیره‌ی payload برای دسترسی بعدی در controller
             $request->merge(['jwt_payload' => $decoded]);
 
-            // گرفتن نقش‌ها
+            // 3️⃣ بررسی نقش
             $roles = $decoded['roles'] ?? [];
 
             if (!in_array($requiredRole, $roles)) {
@@ -48,7 +49,7 @@ class CheckRole
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Invalid token',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 401);
         }
 
