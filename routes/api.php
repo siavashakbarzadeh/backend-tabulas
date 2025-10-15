@@ -74,6 +74,15 @@ Route::group([
 
             // --- Save push subscription
             Route::post('/save-subscription', [SubscriptionController::class, 'saveSubscription'])->name('save-subscription');
+// فقط محدودیت دامنه
+            Route::get('/dashboard', function () {
+                return 'ok';
+            })->middleware('checkrole');
+
+// دامنه + نقش خاص
+            Route::get('/admin', function () {
+                return 'ok';
+            })->middleware('checkrole:Admin');
 
             // --- New OAuth test endpoints
             Route::prefix('oauth')->group(function () {
