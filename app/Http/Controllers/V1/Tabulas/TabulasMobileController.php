@@ -10,7 +10,7 @@ class TabulasMobileController
      */
     public function commissioni()
     {
-        return $this->_pathToJson(storage_path('jsons/mobile/commissioni.json'));
+        return $this->_pathToaJson(storage_path('jsons/mobile/commissioni.json'));
     }
 
     /**
