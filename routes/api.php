@@ -40,6 +40,8 @@ Route::group([
             ];
         });
 
+                    Route::get('tabulas/kiosk/assemblea', [TabulasKioskController::class, 'assemblea'])->name('tabulas.kiosk.assemblea');
+
         // --- Protected routes with Sanctum
         Route::group([
             'middleware' => 'auth:sanctum',
