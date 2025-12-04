@@ -40,7 +40,8 @@ Route::group([
             ];
         });
 
-                    Route::get('tabulas/kiosk/assemblea', [TabulasKioskController::class, 'assemblea'])->name('tabulas.kiosk.assemblea');
+        // ✅ PUBLIC ROUTE (Make sure this is the only one)
+        Route::get('tabulas/kiosk/assemblea', [TabulasKioskController::class, 'assemblea'])->name('tabulas.kiosk.assemblea');
 
         // --- Protected routes with Sanctum
         Route::group([
@@ -67,7 +68,7 @@ Route::group([
             Route::get('tabulas/mobile/servizi', [TabulasMobileController::class, 'servizi'])->name('tabulas.mobile.servizi');
 
             // --- Tabulas Kiosk
-            Route::get('tabulas/kiosk/assemblea', [TabulasKioskController::class, 'assemblea'])->name('tabulas.kiosk.assemblea');
+            // ❌ DELETED DUPLICATE assemblea route from here
             Route::get('tabulas/kiosk/commperm', [TabulasKioskController::class, 'commperm'])->name('tabulas.kiosk.commperm');
             Route::get('tabulas/kiosk/giuntealtrecomm', [TabulasKioskController::class, 'giuntealtrecomm'])->name('tabulas.kiosk.giuntealtrecomm');
             Route::get('tabulas/kiosk/bicamedeleg', [TabulasKioskController::class, 'bicamedeleg'])->name('tabulas.kiosk.bicamedeleg');
@@ -76,12 +77,11 @@ Route::group([
 
             // --- Save push subscription
             Route::post('/save-subscription', [SubscriptionController::class, 'saveSubscription'])->name('save-subscription');
-// فقط محدودیت دامنه
+
             Route::get('/dashboard', function () {
                 return 'ok';
             })->middleware('checkrole');
 
-// دامنه + نقش خاص
             Route::get('/admin', function () {
                 return 'ok';
             })->middleware('checkrole:Admin');
@@ -97,25 +97,3 @@ Route::group([
         });
     });
 });
-
-/*
-|--------------------------------------------------------------------------
-| توضیحات فارسی
-|--------------------------------------------------------------------------
-- بخش اول: routeهای مربوط به push notification (تست، ارسال، لیست پیام‌ها).
-- بخش دوم: احراز هویت (login/register) از جمله Microsoft OAuth.
-- بخش سوم: مدیریت device push برای موبایل.
-- route تست: فقط برای بررسی سریع اتصال API.
-- گروه protected با sanctum:
-    - user info و search
-    - مدیریت applications (نمایش، ثبت، decline، confirm، inbox/outbox)
-    - بخش tabulas mobile (commissioni, ultimiatti, dossier, webtv, ebook, guide, servizi)
-    - بخش tabulas kiosk (assemblea, commperm, giuntealtrecomm, bicamedeleg, webtv, pillolevideo)
-    - ذخیره subscription push
-    - اضافه شدن oauth endpoints جدید برای تست Azure AD:
-        * /oauth/authorities → برگرداندن نقش‌ها
-        * /oauth/jwt → نمایش jwt
-        * /oauth/user → فقط دسترسی با نقش TBL_USER
-        * /oauth/guest → فقط دسترسی با نقش TBL_GUEST
-        * /oauth/admin → فقط دسترسی با نقش TBL_ADMIN
-*/
