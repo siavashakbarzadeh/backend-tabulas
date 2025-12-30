@@ -119,7 +119,7 @@ class TabulasApiService
      */
     public function getAssemblea(): ?array
     {
-        return $this->get('/v2/tabulas/kiosk/assemblea');
+        return $this->get('/v2/tabulas/mobile/assemblea');
     }
 
     /**

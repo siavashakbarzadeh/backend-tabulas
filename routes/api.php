@@ -24,7 +24,10 @@ Route::group([
 
         // --- Auth endpoints
         Route::post('login/microsoft', [AuthenticationController::class, 'loginByMicrosoft'])->name('login-microsoft');
-        Route::post('login', [AuthenticationController::class, 'login'])->name('login');
+        Route::post('login', [AuthenticationController::class, 'login']);
+        Route::get('login', function () {
+            return response()->json(['error' => 'Unauthenticated. Please provide a valid Bearer token.'], 401);
+        })->name('login');
         Route::post('register', [AuthenticationController::class, 'register'])->name('register');
 
         // --- Mobile device push management
