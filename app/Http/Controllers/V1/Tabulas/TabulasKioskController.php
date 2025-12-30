@@ -2,26 +2,32 @@
 
 namespace App\Http\Controllers\V1\Tabulas;
 
+use App\Services\TabulasApiService;
+
 class TabulasKioskController
 {
+    protected TabulasApiService $apiService;
+
+    public function __construct(TabulasApiService $apiService)
+    {
+        $this->apiService = $apiService;
+    }
+
     /**
      * @return mixed
      */
     public function assemblea()
     {
-        // 1. Read the JSON file
-        $jsonPath = storage_path('jsons/chiosco/assemblea.json');
+        // Get data from API
+        $data = $this->apiService->getAssemblea();
 
-        if (!file_exists($jsonPath)) {
-            return response()->json(['error' => 'File not found'], 404);
+        if ($data === null) {
+            return response()->json(['error' => 'Failed to fetch assemblea data'], 503);
         }
 
-        $jsonData = file_get_contents($jsonPath);
-        $data = json_decode($jsonData, true);
-
-        // 2. Extract specific nodes
+        // Extract specific nodes
         $docNodes = $data['docNodes'] ?? [];
-        
+
         $response = [
             'ordine_del_giorno' => null,
             'calendario' => null,
@@ -57,10 +63,10 @@ class TabulasKioskController
     private function parseSimpleHtmlNode($node)
     {
         $content = $node['docContentStreamContent'] ?? '';
-        
+
         // Remove the NOSEARCH comment if present, to clean up the start
         $content = str_replace('<!-- /NOSEARCH -->', '', $content);
-        
+
         return [
             'name' => $node['name'] ?? '',
             'html' => trim($content)
@@ -76,7 +82,7 @@ class TabulasKioskController
     private function parseComunicati($node)
     {
         $fullContent = $node['docContentStreamContent'] ?? '';
-        
+
         if (empty($fullContent)) {
             return [];
         }
@@ -84,7 +90,7 @@ class TabulasKioskController
         // Split by the specific HR tag used in the JSON
         // Using preg_split for case-insensitive matching just in case
         $chunks = preg_split('/<HR class="defrss">/i', $fullContent);
-        
+
         $parsedComunicati = [];
 
         foreach ($chunks as $chunk) {
@@ -108,10 +114,10 @@ class TabulasKioskController
                 $title = trim($h3Nodes->item(0)->textContent);
             }
 
-            // The rest of the content is the body. 
+            // The rest of the content is the body.
             // We can return the raw chunk, or remove the H3 if we want just the body.
             // For now, let's return the full chunk as 'html' and the extracted title separately.
-            
+
             $parsedComunicati[] = [
                 'title' => $title,
                 'html'  => $chunk // The chunk contains the H3 + the HTML body
@@ -126,7 +132,13 @@ class TabulasKioskController
      */
     public function commperm()
     {
-        return $this->_pathToJson(storage_path('jsons/chiosco/commperm.json'));
+        $data = $this->apiService->getCommPerm();
+
+        if ($data === null) {
+            return response()->json(['error' => 'Failed to fetch commperm data'], 503);
+        }
+
+        return $data;
     }
 
     /**
@@ -134,7 +146,13 @@ class TabulasKioskController
      */
     public function giuntealtrecomm()
     {
-        return $this->_pathToJson(storage_path('jsons/chiosco/giuntealtrecomm.json'));
+        $data = $this->apiService->getGiunteAltreComm();
+
+        if ($data === null) {
+            return response()->json(['error' => 'Failed to fetch giuntealtrecomm data'], 503);
+        }
+
+        return $data;
     }
 
     /**
@@ -142,7 +160,13 @@ class TabulasKioskController
      */
     public function bicamedeleg()
     {
-        return $this->_pathToJson(storage_path('jsons/chiosco/bicamedeleg.json'));
+        $data = $this->apiService->getBicameDeleg();
+
+        if ($data === null) {
+            return response()->json(['error' => 'Failed to fetch bicamedeleg data'], 503);
+        }
+
+        return $data;
     }
 
     /**
@@ -150,27 +174,26 @@ class TabulasKioskController
      */
     public function webtv()
     {
-        return $this->_pathToJson(storage_path('jsons/chiosco/webtv.json'));
+        $data = $this->apiService->getKioskWebtv();
+
+        if ($data === null) {
+            return response()->json(['error' => 'Failed to fetch webtv data'], 503);
+        }
+
+        return $data;
     }
-
-
-
-
 
     /**
      * @return mixed
      */
     public function pillolevideo()
     {
-        return $this->_pathToJson(storage_path('jsons/chiosco/pillolevideo.json'));
-    }
+        $data = $this->apiService->getPilloleVideo();
 
-    /**
-     * @param string $path
-     * @return mixed
-     */
-    private function _pathToJson(string $path)
-    {
-        return json_decode(file_get_contents($path), true);
+        if ($data === null) {
+            return response()->json(['error' => 'Failed to fetch pillolevideo data'], 503);
+        }
+
+        return $data;
     }
 }
