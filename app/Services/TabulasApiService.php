@@ -18,6 +18,7 @@ class TabulasApiService
 
     /**
      * Make a GET request to the Tabulas API.
+     * Forwards the Authorization header if present in the incoming request.
      *
      * @param string $endpoint
      * @return array|null
@@ -25,9 +26,18 @@ class TabulasApiService
     protected function get(string $endpoint): ?array
     {
         try {
-            $response = Http::timeout($this->timeout)
-                ->accept('application/json')
-                ->get($this->baseUrl . $endpoint);
+            $request = Http::timeout($this->timeout)
+                ->accept('application/json');
+
+            // Forward the Authorization header if present
+            $authHeader = request()->header('Authorization');
+            if ($authHeader) {
+                $request = $request->withHeaders([
+                    'Authorization' => $authHeader,
+                ]);
+            }
+
+            $response = $request->get($this->baseUrl . $endpoint);
 
             if ($response->successful()) {
                 return $response->json();
@@ -42,6 +52,51 @@ class TabulasApiService
             return null;
         } catch (\Exception $e) {
             Log::error("Tabulas API request exception", [
+                'endpoint' => $endpoint,
+                'error' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
+    }
+
+    /**
+     * Make a POST request to the Tabulas API.
+     * Forwards the Authorization header if present in the incoming request.
+     *
+     * @param string $endpoint
+     * @param array $data
+     * @return array|null
+     */
+    protected function post(string $endpoint, array $data = []): ?array
+    {
+        try {
+            $request = Http::timeout($this->timeout)
+                ->accept('application/json');
+
+            // Forward the Authorization header if present
+            $authHeader = request()->header('Authorization');
+            if ($authHeader) {
+                $request = $request->withHeaders([
+                    'Authorization' => $authHeader,
+                ]);
+            }
+
+            $response = $request->post($this->baseUrl . $endpoint, $data);
+
+            if ($response->successful()) {
+                return $response->json();
+            }
+
+            Log::warning("Tabulas API POST request failed", [
+                'endpoint' => $endpoint,
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ]);
+
+            return null;
+        } catch (\Exception $e) {
+            Log::error("Tabulas API POST request exception", [
                 'endpoint' => $endpoint,
                 'error' => $e->getMessage(),
             ]);

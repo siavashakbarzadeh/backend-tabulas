@@ -46,7 +46,28 @@ Route::group([
         // ✅ PUBLIC ROUTE (Make sure this is the only one)
         Route::get('tabulas/kiosk/assemblea', [TabulasKioskController::class, 'assemblea'])->name('tabulas.kiosk.assemblea');
 
-        // --- Protected routes with Sanctum
+        // --- Tabulas routes with Microsoft JWT authentication
+        Route::group([
+            'middleware' => 'microsoft.jwt',
+        ], function () {
+            // --- Tabulas Mobile
+            Route::get('tabulas/mobile/commissioni', [TabulasMobileController::class, 'commissioni'])->name('tabulas.mobile.commissioni');
+            Route::get('tabulas/mobile/ultimiatti', [TabulasMobileController::class, 'ultimiatti'])->name('tabulas.mobile.ultimiatti');
+            Route::get('tabulas/mobile/ultimdossier', [TabulasMobileController::class, 'ultimdossier'])->name('tabulas.mobile.ultimdossier');
+            Route::get('tabulas/mobile/webtv', [TabulasMobileController::class, 'webtv'])->name('tabulas.mobile.webtv');
+            Route::get('tabulas/mobile/ebook', [TabulasMobileController::class, 'ebook'])->name('tabulas.mobile.ebook');
+            Route::get('tabulas/mobile/guidemanuali', [TabulasMobileController::class, 'guidemanuali'])->name('tabulas.mobile.guidemanuali');
+            Route::get('tabulas/mobile/servizi', [TabulasMobileController::class, 'servizi'])->name('tabulas.mobile.servizi');
+
+            // --- Tabulas Kiosk
+            Route::get('tabulas/kiosk/commperm', [TabulasKioskController::class, 'commperm'])->name('tabulas.kiosk.commperm');
+            Route::get('tabulas/kiosk/giuntealtrecomm', [TabulasKioskController::class, 'giuntealtrecomm'])->name('tabulas.kiosk.giuntealtrecomm');
+            Route::get('tabulas/kiosk/bicamedeleg', [TabulasKioskController::class, 'bicamedeleg'])->name('tabulas.kiosk.bicamedeleg');
+            Route::get('tabulas/kiosk/webtv', [TabulasKioskController::class, 'webtv'])->name('tabulas.kiosk.webtv');
+            Route::get('tabulas/kiosk/pillolevideo', [TabulasKioskController::class, 'pillolevideo'])->name('tabulas.kiosk.pillolevideo');
+        });
+
+        // --- Protected routes with Sanctum (non-Tabulas routes)
         Route::group([
             'middleware' => 'auth:sanctum',
         ], function () {
@@ -60,23 +81,6 @@ Route::group([
             Route::post('/applications/{application}/confirm', [ApplicationController::class, 'confirm']);
             Route::get('/applications/inbox/{userId}', [ApplicationController::class, 'inbox'])->name('applications.inbox');
             Route::get('/applications/outbox/{userId}', [ApplicationController::class, 'outbox'])->name('applications.outbox');
-
-            // --- Tabulas Mobile
-            Route::get('tabulas/mobile/commissioni', [TabulasMobileController::class, 'commissioni'])->name('tabulas.mobile.commissioni');
-            Route::get('tabulas/mobile/ultimiatti', [TabulasMobileController::class, 'ultimiatti'])->name('tabulas.mobile.ultimiatti');
-            Route::get('tabulas/mobile/ultimdossier', [TabulasMobileController::class, 'ultimdossier'])->name('tabulas.mobile.ultimdossier');
-            Route::get('tabulas/mobile/webtv', [TabulasMobileController::class, 'webtv'])->name('tabulas.mobile.webtv');
-            Route::get('tabulas/mobile/ebook', [TabulasMobileController::class, 'ebook'])->name('tabulas.mobile.ebook');
-            Route::get('tabulas/mobile/guidemanuali', [TabulasMobileController::class, 'guidemanuali'])->name('tabulas.mobile.guidemanuali');
-            Route::get('tabulas/mobile/servizi', [TabulasMobileController::class, 'servizi'])->name('tabulas.mobile.servizi');
-
-            // --- Tabulas Kiosk
-            // ❌ DELETED DUPLICATE assemblea route from here
-            Route::get('tabulas/kiosk/commperm', [TabulasKioskController::class, 'commperm'])->name('tabulas.kiosk.commperm');
-            Route::get('tabulas/kiosk/giuntealtrecomm', [TabulasKioskController::class, 'giuntealtrecomm'])->name('tabulas.kiosk.giuntealtrecomm');
-            Route::get('tabulas/kiosk/bicamedeleg', [TabulasKioskController::class, 'bicamedeleg'])->name('tabulas.kiosk.bicamedeleg');
-            Route::get('tabulas/kiosk/webtv', [TabulasKioskController::class, 'webtv'])->name('tabulas.kiosk.webtv');
-            Route::get('tabulas/kiosk/pillolevideo', [TabulasKioskController::class, 'pillolevideo'])->name('tabulas.kiosk.pillolevideo');
 
             // --- Save push subscription
             Route::post('/save-subscription', [SubscriptionController::class, 'saveSubscription'])->name('save-subscription');
